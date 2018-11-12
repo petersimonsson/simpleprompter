@@ -82,5 +82,14 @@ QFont SettingsDialog::scriptViewFont() const
 
 void SettingsDialog::showFontDialog()
 {
-    setScriptViewFont(QFontDialog::getFont(nullptr, m_scriptViewFont, this));
+    QFontDialog *dialog = new QFontDialog(m_scriptViewFont, this);
+    dialog->setAttribute(Qt::WA_DeleteOnClose);
+#ifdef Q_OS_DARWIN
+    dialog->setOption(QFontDialog::DontUseNativeDialog);
+#endif
+
+    connect(dialog, &QFontDialog::fontSelected,
+            this, &SettingsDialog::setScriptViewFont);
+
+    dialog->show();
 }
