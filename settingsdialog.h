@@ -40,8 +40,10 @@ public:
     void setToken(const QString &token);
     QString token() const;
 
-    void setScriptViewFont(const QFont &font);
     QFont scriptViewFont() const;
+
+public slots:
+    void setScriptViewFont(const QFont &font);
 
 private slots:
     void showFontDialog();
