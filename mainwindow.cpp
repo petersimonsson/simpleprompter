@@ -58,11 +58,17 @@ MainWindow::MainWindow(QWidget *parent) :
     (void) new QShortcut(Qt::Key_Left, ui->scriptView, SLOT(back()), SLOT(back()), Qt::ApplicationShortcut);
     (void) new QShortcut(Qt::Key_Right, ui->scriptView, SLOT(forward()), SLOT(forward()), Qt::ApplicationShortcut);
 
+    QSettings settings;
+    restoreGeometry(settings.value("MainWindow/Geometry").toByteArray());
+
     m_rundownCreator->getFoldersAndRundowns();
 }
 
 MainWindow::~MainWindow()
 {
+    QSettings settings;
+    settings.setValue("MainWindow/Geometry", saveGeometry());
+
     delete ui;
 }
 
