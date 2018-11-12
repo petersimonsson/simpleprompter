@@ -82,11 +82,5 @@ QFont SettingsDialog::scriptViewFont() const
 
 void SettingsDialog::showFontDialog()
 {
-    QFontDialog *dialog = new QFontDialog(m_scriptViewFont, this);
-    dialog->setAttribute(Qt::WA_DeleteOnClose);
-
-    connect(dialog, &QFontDialog::fontSelected,
-            this, &SettingsDialog::setScriptViewFont);
-
-    dialog->show();
+    setScriptViewFont(QFontDialog::getFont(nullptr, m_scriptViewFont, this));
 }
