@@ -22,6 +22,11 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+    a.setApplicationName("SimplePrompter");
+    a.setApplicationVersion("0.1");
+    a.setOrganizationDomain("petersimonsson.net");
+    a.setOrganizationName("SimplePrompter");
+
     MainWindow w;
     w.show();
 
