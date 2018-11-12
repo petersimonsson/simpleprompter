@@ -19,11 +19,16 @@
 #include "settingsdialog.h"
 #include "ui_settingsdialog.h"
 
+#include <QFontDialog>
+
 SettingsDialog::SettingsDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::SettingsDialog)
 {
     ui->setupUi(this);
+
+    connect(ui->fontButton, &QToolButton::clicked,
+            this, &SettingsDialog::showFontDialog);
 }
 
 SettingsDialog::~SettingsDialog()
@@ -59,4 +64,28 @@ void SettingsDialog::setToken(const QString &token)
 QString SettingsDialog::token() const
 {
     return ui->tokenEdit->text();
+}
+
+void SettingsDialog::setScriptViewFont(const QFont &font)
+{
+    m_scriptViewFont = font;
+
+    QFontInfo info(m_scriptViewFont);
+    ui->fontLabel->setText(tr("%1, %2pt").arg(info.family()).arg(info.pointSize()));
+    ui->fontLabel->setFont(m_scriptViewFont);
+}
+
+QFont SettingsDialog::scriptViewFont() const
+{
+    return m_scriptViewFont;
+}
+
+void SettingsDialog::showFontDialog()
+{
+    QScopedPointer<QFontDialog> dialog(new QFontDialog(m_scriptViewFont, this));
+
+    if(dialog->exec() == QDialog::Accepted)
+    {
+        setScriptViewFont(dialog->selectedFont());
+    }
 }

@@ -74,12 +74,15 @@ void MainWindow::showSettingsDialog()
     dialog->setUrl(m_rundownCreator->url());
     dialog->setApiKey(m_rundownCreator->apiKey());
     dialog->setToken(m_rundownCreator->apiToken());
+    dialog->setScriptViewFont(ui->scriptView->font());
 
     if(dialog->exec() == QDialog::Accepted)
     {
         m_rundownCreator->setUrl(dialog->url());
         m_rundownCreator->setApiKey(dialog->apiKey());
         m_rundownCreator->setApiToken(dialog->token());
+
+        ui->scriptView->setFont(dialog->scriptViewFont());
 
         m_rundownCreator->getFoldersAndRundowns();
     }

@@ -40,8 +40,16 @@ public:
     void setToken(const QString &token);
     QString token() const;
 
+    void setScriptViewFont(const QFont &font);
+    QFont scriptViewFont() const;
+
+private slots:
+    void showFontDialog();
+
 private:
     Ui::SettingsDialog *ui;
+
+    QFont m_scriptViewFont;
 };
 
 #endif // SETTINGSDIALOG_H

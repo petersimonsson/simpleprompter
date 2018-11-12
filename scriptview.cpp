@@ -24,13 +24,21 @@
 #include <QPainter>
 #include <QDebug>
 #include <QFontMetrics>
+#include <QSettings>
 
 ScriptView::ScriptView(QWidget *parent) :
     QWidget(parent), m_rundownCreator(nullptr), m_currentPage(0)
 {
-    QFont f = font();
-    f.setPointSize(36);
-    setFont(f);
+    QSettings settings;
+    QFont newFont = font();
+    newFont.fromString(settings.value("ScriptView/Font", font().toString()).toString());
+    setFont(newFont);
+}
+
+ScriptView::~ScriptView()
+{
+    QSettings settings;
+    settings.setValue("ScriptView/Font", font().toString());
 }
 
 void ScriptView::reset()

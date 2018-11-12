@@ -28,6 +28,7 @@ class ScriptView : public QWidget
     Q_OBJECT
 public:
     explicit ScriptView(QWidget *parent = nullptr);
+    ~ScriptView() override;
 
     void setRundownCreator(RundownCreator *creator) { m_rundownCreator = creator; reset (); }
 
