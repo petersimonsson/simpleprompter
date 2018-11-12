@@ -20,15 +20,13 @@
 #include "ui_settingsdialog.h"
 
 #include <QFontDialog>
+#include <QDebug>
 
 SettingsDialog::SettingsDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::SettingsDialog)
 {
     ui->setupUi(this);
-
-    connect(ui->fontButton, &QToolButton::clicked,
-            this, &SettingsDialog::showFontDialog);
 }
 
 SettingsDialog::~SettingsDialog()
@@ -66,30 +64,15 @@ QString SettingsDialog::token() const
     return ui->tokenEdit->text();
 }
 
-void SettingsDialog::setScriptViewFont(const QFont &font)
+void SettingsDialog::setScriptViewFont(const QFont &f)
 {
-    m_scriptViewFont = font;
-
-    QFontInfo info(m_scriptViewFont);
-    ui->fontLabel->setText(tr("%1, %2pt").arg(info.family()).arg(info.pointSize()));
-    ui->fontLabel->setFont(m_scriptViewFont);
+    ui->fontCombo->setCurrentFont(f);
+    ui->fontSpin->setValue(f.pointSize());
 }
 
 QFont SettingsDialog::scriptViewFont() const
 {
-    return m_scriptViewFont;
-}
-
-void SettingsDialog::showFontDialog()
-{
-    QFontDialog *dialog = new QFontDialog(m_scriptViewFont, this);
-    dialog->setAttribute(Qt::WA_DeleteOnClose);
-#ifdef Q_OS_DARWIN
-    dialog->setOption(QFontDialog::DontUseNativeDialog);
-#endif
-
-    connect(dialog, &QFontDialog::fontSelected,
-            this, &SettingsDialog::setScriptViewFont);
-
-    dialog->show();
+    QFont newFont = ui->fontCombo->currentFont();
+    newFont.setPointSize(ui->fontSpin->value());
+    return newFont;
 }

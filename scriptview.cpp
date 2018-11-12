@@ -30,8 +30,12 @@ ScriptView::ScriptView(QWidget *parent) :
     QWidget(parent), m_rundownCreator(nullptr), m_currentPage(0)
 {
     QSettings settings;
+#ifdef Q_OS_DARWIN
+    QFont newFont("Helvetica Neue", 20);
+#else
     QFont newFont = font();
-    newFont.fromString(settings.value("ScriptView/Font", font().toString()).toString());
+#endif
+    newFont.fromString(settings.value("ScriptView/Font", newFont.toString()).toString());
     setFont(newFont);
 }
 

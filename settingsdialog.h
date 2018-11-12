@@ -43,15 +43,10 @@ public:
     QFont scriptViewFont() const;
 
 public slots:
-    void setScriptViewFont(const QFont &font);
-
-private slots:
-    void showFontDialog();
+    void setScriptViewFont(const QFont &f);
 
 private:
     Ui::SettingsDialog *ui;
-
-    QFont m_scriptViewFont;
 };
 
 #endif // SETTINGSDIALOG_H
