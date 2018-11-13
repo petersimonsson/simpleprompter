@@ -99,8 +99,10 @@ void ScriptView::paintEvent(QPaintEvent *event)
 
     if(!m_pages.isEmpty())
     {
+        QRect drawRect = rect();
+        drawRect.adjust(10, 0, -10, 0);
         QString text = m_pages[m_currentPage];
-        painter.drawText(rect(), text);
+        painter.drawText(drawRect, text);
     }
 }
 
@@ -122,9 +124,11 @@ void ScriptView::createPages()
         {
             m_rowPageHash.insert(row->rowId(), m_pages.count());
             QString text = "==>" + row->storySlug() + "<==\n\n" + row->script()->script();
-            QRect brect = metrics.boundingRect(rect(), Qt::AlignLeft | Qt::TextWordWrap, text);
+            QRect drawRect = rect();
+            drawRect.adjust(10, 0, -10, 0);
+            QRect brect = metrics.boundingRect(drawRect, Qt::AlignLeft | Qt::TextWordWrap, text);
 
-            if (brect.height() <= rect().height())
+            if (brect.height() <= drawRect.height())
             {
                 m_pages.append(text.toUpper());
             }
@@ -137,15 +141,15 @@ void ScriptView::createPages()
                 {
                     prevCount = remain.count();
                     text = remain.takeFirst();
-                    brect = metrics.boundingRect(rect(), Qt::AlignLeft | Qt::TextWordWrap, text);
+                    brect = metrics.boundingRect(drawRect, Qt::AlignLeft | Qt::TextWordWrap, text);
 
-                    while(brect.height() <= rect().height() && !remain.isEmpty())
+                    while(brect.height() <= drawRect.height() && !remain.isEmpty())
                     {
                         text += " " + remain.takeFirst();
-                        brect = metrics.boundingRect(rect(), Qt::AlignLeft | Qt::TextWordWrap, text);
+                        brect = metrics.boundingRect(drawRect, Qt::AlignLeft | Qt::TextWordWrap, text);
                     }
 
-                    if (brect.height() > rect().height())
+                    if (brect.height() > drawRect.height())
                     {
                         int index = text.lastIndexOf(' ');
                         remain.prepend (text.mid(index + 1));
