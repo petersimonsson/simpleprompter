@@ -123,7 +123,7 @@ void ScriptView::createPages()
 
             if (brect.height() <= rect().height())
             {
-                m_pages.append(text);
+                m_pages.append(text.toUpper());
             }
             else
             {
@@ -149,7 +149,7 @@ void ScriptView::createPages()
                         text = text.left (index);
                     }
 
-                    m_pages.append(text);
+                    m_pages.append(text.toUpper());
                 }
             }
         }
