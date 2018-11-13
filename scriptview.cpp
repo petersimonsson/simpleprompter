@@ -25,6 +25,7 @@
 #include <QDebug>
 #include <QFontMetrics>
 #include <QSettings>
+#include <QRegularExpression>
 
 ScriptView::ScriptView(QWidget *parent) :
     QWidget(parent), m_rundownCreator(nullptr), m_currentPage(0)
@@ -153,26 +154,35 @@ void ScriptView::createPages()
             }
             else
             {
-                QStringList remain = text.split(" ");
+                QStringList remain;
                 int prevCount = 0; // Use this to avoid lock ups due to text not fitting at all
+                QRegularExpression re("\\S*|\\s*");
+                QRegularExpressionMatchIterator it = re.globalMatch(text);
+                while(it.hasNext())
+                {
+                    QRegularExpressionMatch match = it.next();
+                    if(!match.captured(0).isEmpty())
+                        remain.append(match.captured(0));
+                }
 
                 while(!remain.isEmpty() && prevCount != remain.count())
                 {
                     prevCount = remain.count();
                     text = remain.takeFirst();
                     brect = metrics.boundingRect(drawRect, Qt::AlignLeft | Qt::TextWordWrap, text);
+                    int len = 0;
 
                     while(brect.height() <= drawRect.height() && !remain.isEmpty())
                     {
-                        text += " " + remain.takeFirst();
+                        len = remain.first().count();
+                        text += remain.takeFirst();
                         brect = metrics.boundingRect(drawRect, Qt::AlignLeft | Qt::TextWordWrap, text);
                     }
 
                     if (brect.height() > drawRect.height())
                     {
-                        int index = text.lastIndexOf(' ');
-                        remain.prepend (text.mid(index + 1));
-                        text = text.left (index);
+                        remain.prepend (text.right(len));
+                        text = text.left (text.count() - len);
                     }
 
                     auto page = new Page;
