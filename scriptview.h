@@ -57,6 +57,9 @@ private:
     int m_currentPage;
     QList<Page*> m_pages;
     QHash<qint32, int> m_rowPageHash;
+
+signals:
+    void currentRowChanged(qint32 id);
 };
 
 #endif // SCRIPTVIEW_H

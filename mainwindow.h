@@ -43,6 +43,7 @@ private slots:
     void getRundownRows(int index);
     void updateRows();
     void gotoRow(int index);
+    void updateCurrentRow(qint32 rowId);
 
 private:
     Ui::MainWindow *ui;

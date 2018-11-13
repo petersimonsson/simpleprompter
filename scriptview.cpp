@@ -58,6 +58,7 @@ void ScriptView::forward()
     if(!m_pages.isEmpty() && m_currentPage < (m_pages.count() - 1))
     {
         ++m_currentPage;
+        emit currentRowChanged(m_pages[m_currentPage]->rowId);
         repaint();
     }
     else if (m_currentPage >= m_pages.count())
@@ -72,6 +73,7 @@ void ScriptView::back()
     if(!m_pages.isEmpty() && m_currentPage > 0)
     {
         --m_currentPage;
+        emit currentRowChanged(m_pages[m_currentPage]->rowId);
         repaint();
     }
     else if (m_currentPage >= m_pages.count())

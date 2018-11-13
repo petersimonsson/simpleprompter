@@ -44,6 +44,8 @@ MainWindow::MainWindow(QWidget *parent) :
             this, &MainWindow::getRundownRows);
     connect(ui->sectionCombo, QOverload<int>::of(&QComboBox::activated),
             this, &MainWindow::gotoRow);
+    connect(ui->scriptView, &ScriptView::currentRowChanged,
+            this, &MainWindow::updateCurrentRow);
 
     m_rundownCreator = new RundownCreator(this);
 
@@ -165,4 +167,9 @@ void MainWindow::updateRows()
 void MainWindow::gotoRow(int index)
 {
     ui->scriptView->gotoRow(ui->sectionCombo->itemData(index).toInt());
+}
+
+void MainWindow::updateCurrentRow(qint32 rowId)
+{
+    ui->sectionCombo->setCurrentIndex(ui->sectionCombo->findData(rowId));
 }
