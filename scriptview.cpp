@@ -41,6 +41,7 @@ ScriptView::ScriptView(QWidget *parent) :
 
 ScriptView::~ScriptView()
 {
+    qDeleteAll(m_pages);
     QSettings settings;
     settings.setValue("ScriptView/Font", font().toString());
 }
@@ -94,16 +95,24 @@ void ScriptView::paintEvent(QPaintEvent *event)
     Q_UNUSED(event)
     QPainter painter(this);
     painter.fillRect(rect(), QBrush(Qt::black));
-    painter.setBackground(QBrush(Qt::black));
-    painter.setBrush(QBrush(Qt::white));
-    painter.setPen(Qt::white);
 
     if(!m_pages.isEmpty())
     {
+        painter.setBrush(QBrush(Qt::white));
+        painter.setPen(Qt::white);
+
+        QFontMetrics fm(font());
         QRect drawRect = rect();
+        drawRect.setHeight(fm.height());
+        painter.fillRect(drawRect, QBrush(Qt::darkGray));
         drawRect.adjust(10, 0, -10, 0);
-        QString text = m_pages[m_currentPage];
+        QString text = QString::number(m_currentPage + 1) + "/" + QString::number(m_pages.count()) + " " + m_pages[m_currentPage]->title;
         painter.drawText(drawRect, text);
+
+        painter.setBackground(QBrush(Qt::black));
+        drawRect = rect();
+        drawRect.adjust(10, fm.height() + 10, -10, 0);
+        painter.drawText(drawRect, m_pages[m_currentPage]->body);
     }
 }
 
@@ -116,6 +125,7 @@ void ScriptView::resizeEvent(QResizeEvent *event)
 void ScriptView::createPages()
 {
     QFontMetrics metrics(font());
+    qDeleteAll(m_pages);
     m_pages.clear();
     m_rowPageHash.clear();
 
@@ -124,14 +134,20 @@ void ScriptView::createPages()
         if (row->script() && !row->script()->script().isEmpty())
         {
             m_rowPageHash.insert(row->rowId(), m_pages.count());
-            QString text = "==>" + row->storySlug() + "<==\n\n" + row->script()->script();
+            QString text = row->script()->script();
+            QFontMetrics fm(font());
             QRect drawRect = rect();
-            drawRect.adjust(10, 0, -10, 0);
+            drawRect.adjust(10, fm.height() + 10, -10, 0);
             QRect brect = metrics.boundingRect(drawRect, Qt::AlignLeft | Qt::TextWordWrap, text);
 
             if (brect.height() <= drawRect.height())
             {
-                m_pages.append(text.toUpper());
+                auto page = new Page;
+                page->rowId = row->rowId();
+                page->title = row->storySlug().toUpper();
+                page->body = text.toUpper();
+
+                m_pages.append(page);
             }
             else
             {
@@ -157,7 +173,11 @@ void ScriptView::createPages()
                         text = text.left (index);
                     }
 
-                    m_pages.append(text.toUpper());
+                    auto page = new Page;
+                    page->rowId = row->rowId();
+                    page->title = row->storySlug().toUpper();
+                    page->body = text.toUpper();
+                    m_pages.append(page);
                 }
             }
         }
