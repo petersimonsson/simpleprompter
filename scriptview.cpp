@@ -93,6 +93,9 @@ void ScriptView::paintEvent(QPaintEvent *event)
 {
     Q_UNUSED(event)
     QPainter painter(this);
+    painter.fillRect(rect(), QBrush(Qt::black));
+    painter.setBackground(QBrush(Qt::black));
+    painter.setBrush(QBrush(Qt::white));
 
     if(!m_pages.isEmpty())
     {
