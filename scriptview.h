@@ -52,11 +52,17 @@ private:
 
     void createPages();
 
+    QString replaceVariables(const QString &text);
+    QString resizeVariables(const QString &text);
+    QString unresizeVariables(const QString &text);
+
     RundownCreator *m_rundownCreator;
 
     int m_currentPage;
     QList<Page*> m_pages;
     QHash<qint32, int> m_rowPageHash;
+
+    QTimer *m_refreshTimer;
 
 signals:
     void currentRowChanged(qint32 id);

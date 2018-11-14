@@ -26,6 +26,10 @@
 #include <QFontMetrics>
 #include <QSettings>
 #include <QRegularExpression>
+#include <QDateTime>
+#include <QLocale>
+#include <QTimeZone>
+#include <QTimer>
 
 ScriptView::ScriptView(QWidget *parent) :
     QWidget(parent), m_rundownCreator(nullptr), m_currentPage(0)
@@ -38,6 +42,12 @@ ScriptView::ScriptView(QWidget *parent) :
 #endif
     newFont.fromString(settings.value("ScriptView/Font", newFont.toString()).toString());
     setFont(newFont);
+
+    m_refreshTimer = new QTimer(this);
+    m_refreshTimer->setInterval(1000);
+    m_refreshTimer->start();
+
+    connect(m_refreshTimer, &QTimer::timeout, this, [this]{ update(); });
 }
 
 ScriptView::~ScriptView()
@@ -112,10 +122,12 @@ void ScriptView::paintEvent(QPaintEvent *event)
         QString text = QString::number(m_currentPage + 1) + "/" + QString::number(m_pages.count()) + " " + m_pages[m_currentPage]->title;
         painter.drawText(drawRect, text);
 
+        text = replaceVariables(m_pages[m_currentPage]->body);
+
         painter.setBackground(QBrush(Qt::black));
         drawRect = rect();
         drawRect.adjust(10, fm.height() + 10, -10, 0);
-        painter.drawText(drawRect, m_pages[m_currentPage]->body);
+        painter.drawText(drawRect, text);
     }
 }
 
@@ -137,7 +149,8 @@ void ScriptView::createPages()
         if (row->script() && !row->script()->script().isEmpty())
         {
             m_rowPageHash.insert(row->rowId(), m_pages.count());
-            QString text = row->script()->script();
+            QString text = resizeVariables(row->script()->script());
+            qDebug() << text;
             QFontMetrics fm(font());
             QRect drawRect = rect();
             drawRect.adjust(10, fm.height() + 10, -10, 0);
@@ -188,10 +201,94 @@ void ScriptView::createPages()
                     auto page = new Page;
                     page->rowId = row->rowId();
                     page->title = row->storySlug().toUpper();
-                    page->body = text.toUpper();
+                    page->body = unresizeVariables(text.toUpper());
                     m_pages.append(page);
                 }
             }
         }
     }
+}
+
+QString
+ScriptView::replaceVariables(const QString &text)
+{
+    QString newString = text;
+    QRegularExpression re("\\%(TIME|DATE)(:([^\\%]*))?\\%");
+    QRegularExpressionMatchIterator it = re.globalMatch(newString);
+    int offset = 0;
+    QString insert;
+
+    while(it.hasNext())
+    {
+        QRegularExpressionMatch match = it.next();
+        QDateTime dt;
+
+        if(match.lastCapturedIndex() == 3)
+            dt.setTimeZone(QTimeZone(match.captured(3).toLatin1()));
+
+        dt.setSecsSinceEpoch(QDateTime::currentSecsSinceEpoch());
+
+        if(match.captured(1) == "TIME")
+        {
+            insert = dt.time().toString();
+        }
+        else if (match.captured(1) == "DATE")
+        {
+            insert = QLocale().toString(dt.date(), QLocale::LongFormat).toUpper();
+        }
+
+        newString = newString.replace(match.capturedStart(0) + offset, match.capturedLength(0), insert);
+        offset += insert.count() - match.capturedLength(0);
+    }
+
+    return newString;
+}
+
+QString
+ScriptView::resizeVariables(const QString &text)
+{
+    QString newString = text;
+    QRegularExpression re("\\%(TIME|DATE)(:([^\\%]*))?\\%");
+    QRegularExpressionMatchIterator it = re.globalMatch(newString);
+    int offset = 0;
+    QString insert;
+
+    while(it.hasNext())
+    {
+        QRegularExpressionMatch match = it.next();
+        QDateTime dt = QDateTime::currentDateTime();
+
+        if(match.captured(1) == "TIME")
+        {
+            insert = dt.time().toString();
+        }
+        else if (match.captured(1) == "DATE")
+        {
+            insert = QLocale().toString(dt.date(), QLocale::LongFormat).toUpper();
+        }
+
+        int coff = insert.count() - match.capturedLength(0);
+        insert = match.captured(0);
+
+        if(coff > 0)
+        {
+            insert += + "<";
+            for(int i = 0; i < (coff - 2); ++i)
+                insert += "¤";
+            insert += ">";
+        }
+
+        newString = newString.replace(match.capturedStart(0) + offset, match.capturedLength(0), insert);
+        offset += insert.count() - match.capturedLength(0);
+    }
+
+    return newString;
+}
+
+QString ScriptView::unresizeVariables(const QString &text)
+{
+    QString newString = text;
+    newString = newString.remove(QRegularExpression("<¤*>"));
+
+    return newString;
 }
