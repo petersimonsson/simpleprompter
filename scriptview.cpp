@@ -132,7 +132,7 @@ void ScriptView::paintEvent(QPaintEvent *event)
         painter.setBackground(QBrush(Qt::black));
         drawRect = rect();
         drawRect.adjust(10, fm.height() + 10, -10, 0);
-        painter.drawText(drawRect, text);
+        painter.drawText(drawRect, Qt::AlignLeft | Qt::TextWordWrap, text);
     }
 }
 
@@ -148,16 +148,16 @@ void ScriptView::createPages()
     qDeleteAll(m_pages);
     m_pages.clear();
     m_rowPageHash.clear();
+    QFontMetrics fm(font());
+    QRect drawRect = rect();
+    drawRect.adjust(10, fm.height() + 10, -10, 0);
 
     foreach(RundownRow *row, m_rundownCreator->rundownRows())
     {
         if (row->script() && !row->script()->script().isEmpty())
         {
             m_rowPageHash.insert(row->rowId(), m_pages.count());
-            QString text = resizeVariables(row->script()->script());
-            QFontMetrics fm(font());
-            QRect drawRect = rect();
-            drawRect.adjust(10, fm.height() + 10, -10, 0);
+            QString text = resizeVariables(row->script()->script().toUpper());
             QRect brect = metrics.boundingRect(drawRect, Qt::AlignLeft | Qt::TextWordWrap, text);
 
             if (brect.height() <= drawRect.height())
@@ -165,7 +165,7 @@ void ScriptView::createPages()
                 auto page = new Page;
                 page->rowId = row->rowId();
                 page->title = row->storySlug().toUpper();
-                page->body = unresizeVariables(text.toUpper());
+                page->body = unresizeVariables(text);
 
                 m_pages.append(page);
             }
@@ -205,7 +205,7 @@ void ScriptView::createPages()
                     auto page = new Page;
                     page->rowId = row->rowId();
                     page->title = row->storySlug().toUpper();
-                    page->body = unresizeVariables(text.toUpper());
+                    page->body = unresizeVariables(text);
                     m_pages.append(page);
                 }
             }
