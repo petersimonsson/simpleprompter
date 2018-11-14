@@ -165,7 +165,7 @@ void ScriptView::createPages()
                 auto page = new Page;
                 page->rowId = row->rowId();
                 page->title = row->storySlug().toUpper();
-                page->body = text.toUpper();
+                page->body = unresizeVariables(text.toUpper());
 
                 m_pages.append(page);
             }
@@ -278,10 +278,10 @@ ScriptView::resizeVariables(const QString &text)
 
         if(coff > 0)
         {
-            insert += + "<";
+            insert += + '<';
             for(int i = 0; i < (coff - 2); ++i)
-                insert += "¤";
-            insert += ">";
+                insert += '#';
+            insert += '>';
         }
 
         newString = newString.replace(match.capturedStart(0) + offset, match.capturedLength(0), insert);
@@ -294,7 +294,7 @@ ScriptView::resizeVariables(const QString &text)
 QString ScriptView::unresizeVariables(const QString &text)
 {
     QString newString = text;
-    newString = newString.remove(QRegularExpression("<¤*>"));
+    newString = newString.remove(QRegularExpression("<#*>"));
 
     return newString;
 }
