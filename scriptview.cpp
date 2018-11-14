@@ -156,7 +156,7 @@ void ScriptView::createPages()
             {
                 QStringList remain;
                 int prevCount = 0; // Use this to avoid lock ups due to text not fitting at all
-                QRegularExpression re("\\S*|\\s*");
+                QRegularExpression re("\\S*|\\s");
                 QRegularExpressionMatchIterator it = re.globalMatch(text);
                 while(it.hasNext())
                 {
