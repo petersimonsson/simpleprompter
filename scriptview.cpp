@@ -150,7 +150,6 @@ void ScriptView::createPages()
         {
             m_rowPageHash.insert(row->rowId(), m_pages.count());
             QString text = resizeVariables(row->script()->script());
-            qDebug() << text;
             QFontMetrics fm(font());
             QRect drawRect = rect();
             drawRect.adjust(10, fm.height() + 10, -10, 0);
