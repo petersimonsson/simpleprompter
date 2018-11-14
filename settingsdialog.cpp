@@ -76,3 +76,23 @@ QFont SettingsDialog::scriptViewFont() const
     newFont.setPointSize(ui->fontSpin->value());
     return newFont;
 }
+
+void SettingsDialog::setClockType(int type)
+{
+    ui->clockTypeCombo->setCurrentIndex(type);
+}
+
+int SettingsDialog::clockType() const
+{
+    return ui->clockTypeCombo->currentIndex();
+}
+
+void SettingsDialog::setShowSeconds(bool show)
+{
+    ui->secondsCheck->setChecked(show);
+}
+
+bool SettingsDialog::showSeconds() const
+{
+    return ui->secondsCheck->isChecked();
+}

@@ -83,6 +83,8 @@ void MainWindow::showSettingsDialog()
     dialog->setApiKey(m_rundownCreator->apiKey());
     dialog->setToken(m_rundownCreator->apiToken());
     dialog->setScriptViewFont(ui->scriptView->font());
+    dialog->setClockType(ui->scriptView->clockType());
+    dialog->setShowSeconds(ui->scriptView->showSeconds());
 
     if(dialog->exec() == QDialog::Accepted)
     {
@@ -91,6 +93,8 @@ void MainWindow::showSettingsDialog()
         m_rundownCreator->setApiToken(dialog->token());
 
         ui->scriptView->setFont(dialog->scriptViewFont());
+        ui->scriptView->setClockType(dialog->clockType());
+        ui->scriptView->setShowSeconds(dialog->showSeconds());
 
         m_rundownCreator->getFoldersAndRundowns();
     }

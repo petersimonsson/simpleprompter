@@ -43,6 +43,9 @@ ScriptView::ScriptView(QWidget *parent) :
     newFont.fromString(settings.value("ScriptView/Font", newFont.toString()).toString());
     setFont(newFont);
 
+    m_clockType = settings.value("ScriptView/ClockType", Clock12h).toInt();
+    m_showSeconds = settings.value("ScriptView/ShowSeconds", false).toBool();
+
     m_refreshTimer = new QTimer(this);
     m_refreshTimer->setInterval(1000);
     m_refreshTimer->start();
@@ -55,6 +58,8 @@ ScriptView::~ScriptView()
     qDeleteAll(m_pages);
     QSettings settings;
     settings.setValue("ScriptView/Font", font().toString());
+    settings.setValue("ScriptView/ClockType", m_clockType);
+    settings.setValue("ScriptView/ShowSeconds", m_showSeconds);
 }
 
 void ScriptView::reset()
@@ -216,6 +221,7 @@ ScriptView::replaceVariables(const QString &text)
     QRegularExpressionMatchIterator it = re.globalMatch(newString);
     int offset = 0;
     QString insert;
+    QString clockFormat = generateClockFormat();
 
     while(it.hasNext())
     {
@@ -229,7 +235,7 @@ ScriptView::replaceVariables(const QString &text)
 
         if(match.captured(1) == "TIME")
         {
-            insert = dt.time().toString();
+            insert = dt.time().toString(clockFormat);
         }
         else if (match.captured(1) == "DATE")
         {
@@ -251,6 +257,7 @@ ScriptView::resizeVariables(const QString &text)
     QRegularExpressionMatchIterator it = re.globalMatch(newString);
     int offset = 0;
     QString insert;
+    QString clockFormat = generateClockFormat();
 
     while(it.hasNext())
     {
@@ -259,7 +266,7 @@ ScriptView::resizeVariables(const QString &text)
 
         if(match.captured(1) == "TIME")
         {
-            insert = dt.time().toString();
+            insert = dt.time().toString(clockFormat);
         }
         else if (match.captured(1) == "DATE")
         {
@@ -290,4 +297,29 @@ QString ScriptView::unresizeVariables(const QString &text)
     newString = newString.remove(QRegularExpression("<¤*>"));
 
     return newString;
+}
+
+QString ScriptView::generateClockFormat() const
+{
+    QString format;
+
+    if(m_clockType == Clock24h)
+    {
+        format = "HH:mm";
+
+        if(m_showSeconds)
+            format += ":ss";
+    }
+    else
+    {
+        format = "hh:mm";
+
+        if(m_showSeconds)
+            format += ":ss";
+
+        format += " AP";
+    }
+
+
+    return format;
 }

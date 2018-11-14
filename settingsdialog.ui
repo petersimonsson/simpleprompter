@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>274</height>
+    <width>401</width>
+    <height>293</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -96,6 +96,34 @@
        <widget class="QSpinBox" name="fontSpin">
         <property name="suffix">
          <string> pt</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_5">
+        <property name="text">
+         <string>Clock style:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QComboBox" name="clockTypeCombo">
+        <item>
+         <property name="text">
+          <string>24 hours</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>12 hours</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="QCheckBox" name="secondsCheck">
+        <property name="text">
+         <string>Seconds</string>
         </property>
        </widget>
       </item>

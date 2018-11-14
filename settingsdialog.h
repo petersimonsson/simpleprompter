@@ -42,6 +42,11 @@ public:
 
     QFont scriptViewFont() const;
 
+    void setClockType(int type);
+    int clockType() const;
+    void setShowSeconds(bool show);
+    bool showSeconds() const;
+
 public slots:
     void setScriptViewFont(const QFont &f);
 

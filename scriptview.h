@@ -27,12 +27,22 @@ class ScriptView : public QWidget
 {
     Q_OBJECT
 public:
+    enum ClockType {
+        Clock24h,
+        Clock12h
+    };
+
     explicit ScriptView(QWidget *parent = nullptr);
     ~ScriptView() override;
 
     void setRundownCreator(RundownCreator *creator) { m_rundownCreator = creator; reset (); }
 
     void reset();
+
+    void setClockType(int type) { m_clockType = type; update(); }
+    int clockType() const { return m_clockType; }
+    void setShowSeconds(bool show) { m_showSeconds = show; update(); }
+    bool showSeconds() const { return  m_showSeconds; }
 
 public slots:
     void forward();
@@ -56,6 +66,8 @@ private:
     QString resizeVariables(const QString &text);
     QString unresizeVariables(const QString &text);
 
+    QString generateClockFormat() const;
+
     RundownCreator *m_rundownCreator;
 
     int m_currentPage;
@@ -63,6 +75,9 @@ private:
     QHash<qint32, int> m_rowPageHash;
 
     QTimer *m_refreshTimer;
+
+    int m_clockType;
+    bool m_showSeconds;
 
 signals:
     void currentRowChanged(qint32 id);
