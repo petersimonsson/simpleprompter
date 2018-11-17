@@ -64,8 +64,13 @@ ScriptView::~ScriptView()
 
 void ScriptView::reset()
 {
-    m_currentPage = 0;
+    QString marker;
+    qint32 rowId = 0;
+    generateMarker(&marker, &rowId);
     createPages();
+    m_currentPage = findMarker(marker, rowId);
+    if(!m_pages.isEmpty())
+        emit currentRowChanged(m_pages[m_currentPage]->rowId);
     update();
 }
 
@@ -80,6 +85,8 @@ void ScriptView::forward()
     else if (m_currentPage >= m_pages.count())
     {
         m_currentPage = 0;
+        if(!m_pages.isEmpty())
+            emit currentRowChanged(m_pages[m_currentPage]->rowId);
         update();
     }
 }
@@ -95,6 +102,8 @@ void ScriptView::back()
     else if (m_currentPage >= m_pages.count())
     {
         m_currentPage = 0;
+        if(!m_pages.isEmpty())
+            emit currentRowChanged(m_pages[m_currentPage]->rowId);
         update();
     }
 }
@@ -104,6 +113,8 @@ void ScriptView::gotoRow(qint32 row)
     if(m_rowPageHash.contains(row))
     {
         m_currentPage = m_rowPageHash.value(row);
+        if(!m_pages.isEmpty())
+            emit currentRowChanged(m_pages[m_currentPage]->rowId);
         update();
     }
 }
@@ -322,4 +333,37 @@ QString ScriptView::generateClockFormat() const
 
 
     return format;
+}
+
+void ScriptView::generateMarker(QString *marker, qint32 *rowId) const
+{
+    if(m_pages.isEmpty())
+        return;
+
+    *rowId = m_pages[m_currentPage]->rowId;
+    *marker = m_pages[m_currentPage]->body;
+    *marker = marker->left(10);
+}
+
+int ScriptView::findMarker(const QString &marker, qint32 rowId) const
+{
+    int index = 0;
+
+    if(!marker.isEmpty())
+    {
+        int current = m_rowPageHash.value(rowId);
+
+        while(current < m_pages.count())
+        {
+            if(m_pages[current]->body.contains(marker))
+            {
+                index = current;
+                break;
+            }
+
+            ++current;
+        }
+    }
+
+    return index;
 }

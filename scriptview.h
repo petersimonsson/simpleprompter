@@ -68,6 +68,9 @@ private:
 
     QString generateClockFormat() const;
 
+    void generateMarker(QString *marker, qint32 *rowId) const;
+    int findMarker(const QString &marker, qint32 rowId) const;
+
     RundownCreator *m_rundownCreator;
 
     int m_currentPage;
