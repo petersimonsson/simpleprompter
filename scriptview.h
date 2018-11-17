@@ -39,9 +39,9 @@ public:
 
     void reset();
 
-    void setClockType(int type) { m_clockType = type; update(); }
+    void setClockType(int type) { m_clockType = type; }
     int clockType() const { return m_clockType; }
-    void setShowSeconds(bool show) { m_showSeconds = show; update(); }
+    void setShowSeconds(bool show) { m_showSeconds = show; }
     bool showSeconds() const { return  m_showSeconds; }
 
 public slots:

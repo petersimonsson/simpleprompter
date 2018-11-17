@@ -66,7 +66,7 @@ void ScriptView::reset()
 {
     m_currentPage = 0;
     createPages();
-    repaint();
+    update();
 }
 
 void ScriptView::forward()
@@ -75,12 +75,12 @@ void ScriptView::forward()
     {
         ++m_currentPage;
         emit currentRowChanged(m_pages[m_currentPage]->rowId);
-        repaint();
+        update();
     }
     else if (m_currentPage >= m_pages.count())
     {
         m_currentPage = 0;
-        repaint();
+        update();
     }
 }
 
@@ -90,12 +90,12 @@ void ScriptView::back()
     {
         --m_currentPage;
         emit currentRowChanged(m_pages[m_currentPage]->rowId);
-        repaint();
+        update();
     }
     else if (m_currentPage >= m_pages.count())
     {
         m_currentPage = 0;
-        repaint();
+        update();
     }
 }
 
@@ -104,7 +104,7 @@ void ScriptView::gotoRow(qint32 row)
     if(m_rowPageHash.contains(row))
     {
         m_currentPage = m_rowPageHash.value(row);
-        repaint();
+        update();
     }
 }
 
