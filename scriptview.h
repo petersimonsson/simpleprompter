@@ -56,6 +56,7 @@ protected:
 private:
     struct Page {
         qint32 rowId;
+        int pageNumber;
         QString title;
         QString body;
     };
@@ -76,6 +77,7 @@ private:
     int m_currentPage;
     QList<Page*> m_pages;
     QHash<qint32, int> m_rowPageHash;
+    QHash<qint32, int> m_pageCounts;
 
     QTimer *m_refreshTimer;
 

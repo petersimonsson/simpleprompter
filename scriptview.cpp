@@ -135,7 +135,8 @@ void ScriptView::paintEvent(QPaintEvent *event)
         drawRect.setHeight(fm.height());
         painter.fillRect(drawRect, QBrush(Qt::darkGray));
         drawRect.adjust(10, 0, -10, 0);
-        QString text = QString::number(m_currentPage + 1) + "/" + QString::number(m_pages.count()) + " " + m_pages[m_currentPage]->title;
+        Page *page = m_pages[m_currentPage];
+        QString text = QString::number(page->pageNumber) + "/" + QString::number(m_pageCounts[page->rowId]) + " " + page->title;
         painter.drawText(drawRect, text);
 
         text = replaceVariables(m_pages[m_currentPage]->body);
@@ -165,6 +166,8 @@ void ScriptView::createPages()
 
     foreach(RundownRow *row, m_rundownCreator->rundownRows())
     {
+        int rowPage = 1;
+
         if (row->script() && !row->script()->script().isEmpty())
         {
             m_rowPageHash.insert(row->rowId(), m_pages.count());
@@ -175,10 +178,12 @@ void ScriptView::createPages()
             {
                 auto page = new Page;
                 page->rowId = row->rowId();
+                page->pageNumber = rowPage++;
                 page->title = row->storySlug().toUpper();
                 page->body = unresizeVariables(text);
 
                 m_pages.append(page);
+                ++m_pageCounts[row->rowId()];
             }
             else
             {
@@ -215,9 +220,11 @@ void ScriptView::createPages()
 
                     auto page = new Page;
                     page->rowId = row->rowId();
+                    page->pageNumber = rowPage++;
                     page->title = row->storySlug().toUpper();
                     page->body = unresizeVariables(text);
                     m_pages.append(page);
+                    ++m_pageCounts[row->rowId()];
                 }
             }
         }
