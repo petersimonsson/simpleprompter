@@ -160,6 +160,7 @@ void ScriptView::createPages()
     qDeleteAll(m_pages);
     m_pages.clear();
     m_rowPageHash.clear();
+    m_pageCounts.clear();
     QFontMetrics fm(font());
     QRect drawRect = rect();
     drawRect.adjust(10, fm.height() + 10, -10, 0);
